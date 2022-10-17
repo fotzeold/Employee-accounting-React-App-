@@ -1,4 +1,5 @@
 import { Component } from 'react';
+import classes from 'classnames';
 
 import './employees-add-form.css';
 
@@ -7,7 +8,8 @@ class EmployersAddForm extends Component {
 		super(props);
 		this.state = {
 			name: '',
-			salary: ''
+			salary: '',
+			inputClass: false
 		}
 	}
 
@@ -20,15 +22,27 @@ class EmployersAddForm extends Component {
 
 	onSubmit = (e) => {
 		e.preventDefault();
-		this.props.onAdd(this.state.name, this.state.salary);
-		this.setState({
-			name: '',
-			salary: ''
-		})
+		if (this.state.name.length < 3 || this.state.salary.length < 3) {
+			this.setState({
+				inputClass: true
+			})
+		} else {
+			this.props.onAdd(this.state.name, this.state.salary);
+			this.setState({
+				name: '',
+				salary: '',
+				inputClass: false
+			})
+		}
 	}
 
 	render() {
-		const { name, salary } = this.state;
+		const { name, salary, inputClass } = this.state;
+
+		const classWarn = classes({
+			warning: true,
+			inputClass
+		});
 
 		return (
 			<div className="app-add-form">
@@ -36,12 +50,14 @@ class EmployersAddForm extends Component {
 				<form
 					onSubmit={this.onSubmit}
 					className="add-form d-flex">
+
 					<input type="text"
 						className="form-control new-post-label"
 						placeholder="Як його звати?"
 						name="name"
 						value={name}
 						onChange={this.onValueChange} />
+
 					<input type="number"
 						className="form-control new-post-label"
 						placeholder="З/П в $?"
@@ -52,6 +68,8 @@ class EmployersAddForm extends Component {
 					<button type="submit"
 						className="btn btn-outline-light">Добавити</button>
 				</form>
+
+				<span className={classWarn}>Дані введено некорректно!</span>
 			</div>)
 	}
 }
